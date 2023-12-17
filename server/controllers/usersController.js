@@ -1,11 +1,12 @@
-const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const asyncHandler = require("express-async-handler");
 const db = require("../db");
-const { createToken, validateToken } = require("../jwt");
+const { createToken } = require("../jwt");
 const { body, validationResult } = require("express-validator");
 const checkEmailNotInUse = require("../validators/checkEmailNotInUse");
 const passwordHasNoEmptySpace = require("../validators/passwordHasNoEmptySpace");
+const userIdIsValid = require("../validators/userIdIsValid");
+const userIsNonMember = require("../validators/userIsNonMember");
 
 exports.sign_up = [
   body("name", "Name is invalid")
@@ -175,3 +176,92 @@ exports.log_out = (req, res) => {
     })
     .send();
 };
+
+exports.grant_membership = [
+  body("userId")
+    .trim()
+    .escape()
+    .custom((userId) => {
+      return new Promise((resolve, reject) => {
+        userIdIsValid(userId)
+          .then((result) => {
+            if (result === true) {
+              resolve();
+            } else {
+              reject();
+            }
+          })
+          .catch((err) => {
+            reject("Database error: ", err.message);
+          });
+      });
+    })
+    .bail()
+    .withMessage("Could not find user id")
+    .custom((userId) => {
+      return new Promise((resolve, reject) => {
+        userIsNonMember(userId)
+          .then((result) => {
+            if (result === true) {
+              resolve();
+            } else {
+              reject();
+            }
+          })
+          .catch((err) => {
+            reject("Database error: ", err.message);
+          });
+      });
+    })
+    .withMessage("User is already a member"),
+  (req, res) => {
+    const result = validationResult(req);
+    const id = req.body.userId;
+
+    if (result.isEmpty()) {
+      // This first query updates the membership to member
+      db.query(
+        "UPDATE users SET membership = 'member' WHERE users.id = ?",
+        [id],
+        (error, result) => {
+          if (error) {
+            console.log(error);
+            return res
+              .status(500)
+              .json({ message: "Internal server error", error });
+          } else {
+            console.log(result);
+            // This second query retrieves the information for the user who just became a member and returns an updated cookie that reflects the
+            // change in membership status
+            db.query(
+              "SELECT id, name, email, membership FROM users where id = ?",
+              [id],
+              (error, result) => {
+                if (error) {
+                  return res
+                    .status(500)
+                    .json({ message: "Internal server error", error });
+                }
+                const user = result[0];
+                const accessToken = createToken(user);
+                return res
+                  .cookie("access-token", accessToken, {
+                    maxAge: 60 * 60 * 24 * 30 * 1000,
+                    secure: true,
+                    sameSite: "strict",
+                    domain: process.env.DOMAIN,
+                  })
+                  .status(200)
+                  .json({ message: `Membership granted to user ${id}` });
+              }
+            );
+          }
+        }
+      );
+    } else {
+      return res
+        .status(400)
+        .json({ message: "Membership grant failed", error: result.array() });
+    }
+  },
+];

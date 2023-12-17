@@ -9,4 +9,6 @@ router.post("/log-in", usersController.log_in);
 
 router.post("/log-out", usersController.log_out);
 
+router.post("/grant-membership", usersController.grant_membership);
+
 module.exports = router;
