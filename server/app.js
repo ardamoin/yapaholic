@@ -8,7 +8,6 @@ const { validateToken } = require("./jwt");
 
 dotenv.config();
 
-const indexRouter = require("./routes/index");
 const usersRouter = require("./routes/users");
 const messagesRouter = require("./routes/messages");
 
@@ -25,7 +24,6 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 app.use(validateToken);
 
-app.use("/", indexRouter);
 app.use("/messages", messagesRouter);
 app.use("/users", usersRouter);
 
