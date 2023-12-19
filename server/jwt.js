@@ -15,17 +15,18 @@ const createToken = (user) => {
 };
 
 const validateToken = (req, res, next) => {
-  const accessToken = req.cookies["access-token"];
+  const accessToken = req.cookies && req.cookies["access-token"];
 
   if (!accessToken) {
-    return res.status(401).json({ message: "User not authenticated" });
+    req.authenticated = false;
+    return next();
   }
 
   try {
     const tokenIsValid = verify(accessToken, process.env.JWT_SECRET);
     if (tokenIsValid) {
       req.authenticated = true;
-      return next;
+      return next();
     }
   } catch (err) {
     return res.status(401).json({ message: err });
