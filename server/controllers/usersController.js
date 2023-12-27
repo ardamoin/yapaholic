@@ -13,7 +13,9 @@ exports.sign_up = [
     .trim()
     .escape()
     .isLength({ min: 1 })
-    .withMessage("Invalid name length. Name length must at least 1 character")
+    .withMessage(
+      "Invalid name length. Name length must be at least 1 character"
+    )
     .isLength({ max: 50 })
     .withMessage(
       "Invalid name length. Name length cannot exceed 50 characters"
@@ -99,6 +101,9 @@ exports.sign_up = [
 //User validation logic to be added
 exports.log_in = [
   body("email")
+    .exists({ values: "falsy" })
+    .withMessage("Email is missing")
+    .bail()
     .escape()
     .custom((email) => {
       return new Promise((resolve, reject) => {
@@ -116,7 +121,10 @@ exports.log_in = [
       });
     })
     .withMessage("Email could not be found"),
-  body("password").escape(),
+  body("password")
+    .exists({ values: "falsy" })
+    .withMessage("Password is missing")
+    .escape(),
   (req, res) => {
     const result = validationResult(req);
 
@@ -181,6 +189,9 @@ exports.grant_membership = [
   body("userId")
     .trim()
     .escape()
+    .exists({ values: "falsy" })
+    .withMessage("User ID is missing")
+    .bail()
     .custom((userId) => {
       return new Promise((resolve, reject) => {
         userIdIsValid(userId)
@@ -214,9 +225,21 @@ exports.grant_membership = [
       });
     })
     .withMessage("User is already a member"),
+  body("passcode")
+    .trim()
+    .escape()
+    .exists({ values: "falsy" })
+    .withMessage("Please provide the passcode")
+    .bail()
+    .equals("banana")
+    .withMessage("Incorrect passcode"),
   (req, res) => {
     const result = validationResult(req);
     const id = req.body.userId;
+
+    if (!req.authenticated) {
+      return res.status(401).json({ message: "Unauthenticated request" });
+    }
 
     if (result.isEmpty()) {
       // This first query updates the membership to member

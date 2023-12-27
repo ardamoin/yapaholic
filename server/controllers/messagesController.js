@@ -2,22 +2,28 @@ const asyncHandler = require("express-async-handler");
 const db = require("../db");
 
 exports.member_messages_get = asyncHandler(async (req, res) => {
-  db.query(
-    "SELECT messages.title, messages.text, messages.date, users.name FROM messages JOIN users ON messages.user_id = users.id",
-    (error, result) => {
-      console.log(result);
-      if (error) {
-        console.log(error);
-        return res
-          .status(500)
-          .json({ message: "Internal server error", error });
-      }
+  if (req.authenticated) {
+    db.query(
+      "SELECT messages.title, messages.text, messages.date, users.name FROM messages JOIN users ON messages.user_id = users.id",
+      (error, result) => {
+        if (error) {
+          console.log(error);
+          return res
+            .status(500)
+            .json({ message: "Internal server error", error });
+        }
 
-      return res
-        .status(200)
-        .json({ message: "Messages for members fetched successfully", result });
-    }
-  );
+        return res.status(200).json({
+          message: "Messages for members fetched successfully",
+          result,
+        });
+      }
+    );
+  } else {
+    return res.status(401).json({
+      message: "Unauthenticated request",
+    });
+  }
 });
 
 exports.non_member_messages_get = asyncHandler(async (req, res) => {
