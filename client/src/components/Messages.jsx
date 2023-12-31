@@ -9,7 +9,7 @@ const Messages = () => {
   useEffect(() => {
     const fetchMessages = async () => {
       try {
-        if (userMembership === "" || userMembership === "non-member") {
+        if (userMembership === null || userMembership === "non-member") {
           const response = await fetch(
             `${import.meta.env.VITE_BACKEND_URL}/messages/non-member`,
             {
