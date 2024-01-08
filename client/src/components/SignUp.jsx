@@ -1,8 +1,9 @@
 import { useRef, useState } from "react";
 import { jwtDecode } from "jwt-decode";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { userActions } from "../store/user-slice";
 import { useNavigate } from "react-router-dom";
+import ErrorPage from "./ErrorPage";
 
 const SignUp = () => {
   const passwordRef = useRef();
@@ -12,6 +13,7 @@ const SignUp = () => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const userId = useSelector((state) => state.user.id);
 
   const passwordMatchHandler = () => {
     if (passwordRef.current.value !== confirmPasswordRef.current.value) {
@@ -79,6 +81,12 @@ const SignUp = () => {
     }
   };
 
+  if (userId) {
+    return (
+    <ErrorPage errorMessage="Can't sign up when user is already signed in..." />
+    );
+  }
+
   return (
     <div className="flex flex-col justify-center items-center mt-28">
       <form
@@ -138,7 +146,10 @@ const SignUp = () => {
             )}
           </div>
         </div>
-        <button className="flex w-full justify-center items-center h-12 rounded bg-purple-pink text-white mt-4 hover:brightness-75 duration-75 disabled:brightness-50" disabled={!passwordsMatch}>
+        <button
+          className="flex w-full justify-center items-center h-12 rounded bg-purple-pink text-white mt-4 hover:brightness-75 duration-75 disabled:brightness-50"
+          disabled={!passwordsMatch}
+        >
           SUBMIT
         </button>
         {errorMessages.length !== 0 && (

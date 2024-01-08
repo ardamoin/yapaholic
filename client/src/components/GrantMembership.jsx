@@ -2,12 +2,14 @@ import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { userActions } from "../store/user-slice";
+import ErrorPage from "./ErrorPage";
 
 const GrantMembership = () => {
   const passcodeRef = useRef();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const userId = useSelector((state) => state.user.id);
+  const userMembership = useSelector((state) => state.user.membership);
 
   const formSubmitHandler = async (event) => {
     event.preventDefault();
@@ -44,6 +46,14 @@ const GrantMembership = () => {
     }
   };
 
+  if (userMembership === "admin" || userMembership === "member") {
+    return <ErrorPage errorMessage="User is already a member..."/>
+  }
+
+  if (typeof userId === "string") {
+    return <ErrorPage errorMessage="User not found..."/>
+  }
+
   return (
     <div className="flex justify-center items-center -mt-32 h-[100vh]">
       <form
@@ -66,7 +76,10 @@ const GrantMembership = () => {
             ref={passcodeRef}
           />
         </div>
-        <button onClick={formSubmitHandler} className="flex w-full justify-center items-center h-12 rounded bg-purple-pink text-white mt-4 hover:brightness-75 duration-75">
+        <button
+          onClick={formSubmitHandler}
+          className="flex w-full justify-center items-center h-12 rounded bg-purple-pink text-white mt-4 hover:brightness-75 duration-75"
+        >
           BECOME A MEMBER
         </button>
       </form>
