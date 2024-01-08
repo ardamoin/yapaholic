@@ -8,6 +8,7 @@ import login from "../assets/login.svg";
 import logout from "../assets/logout.svg";
 import signup from "../assets/signup.svg";
 import upgrade from "../assets/upgrade.svg";
+import newmsg from "../assets/newmsg.svg";
 
 const Header = () => {
   const userId = useSelector((state) => state.user.id);
@@ -30,7 +31,7 @@ const Header = () => {
       console.log(response);
       dispatch(userActions.logout());
       navigate("/");
-      navigate(0)
+      navigate(0);
     } catch (error) {
       console.error(error);
     }
@@ -60,6 +61,12 @@ const Header = () => {
         )}
         {userId !== "" && (
           <>
+            <Link to="/new-message">
+              <button className="border-solid border-[1px] px-4 py-1 rounded-md border-purple-pink hover:bg-purple-pink hover:text-golden-yellow transition flex items-center gap-2">
+                <img src={newmsg} className="h-5 w-auto" />
+                New Message
+              </button>
+            </Link>
             {userMembership == "non-member" && (
               <Link to="/grant-membership">
                 <button className="border-solid border-[1px] px-4 py-1 rounded-md border-purple-pink hover:bg-purple-pink hover:text-golden-yellow transition flex items-center gap-2">

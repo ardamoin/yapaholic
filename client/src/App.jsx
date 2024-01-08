@@ -4,6 +4,7 @@ import Messages from "./components/Messages";
 import LogIn from "./components/LogIn";
 import SignUp from "./components/SignUp";
 import GrantMembership from "./components/GrantMembership";
+import NewMessage from "./components/NewMessage";
 import NotFound from "./components/NotFound";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
@@ -32,6 +33,7 @@ function App() {
         <Route path="/log-in" element={<LogIn />} />
         <Route path="/sign-up" element={<SignUp />} />
         <Route path="/grant-membership" element={<GrantMembership />} />
+        <Route path="/new-message" element={<NewMessage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </div>
