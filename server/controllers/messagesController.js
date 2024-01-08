@@ -47,24 +47,29 @@ exports.non_member_messages_get = asyncHandler(async (req, res) => {
 });
 
 exports.messages_create = asyncHandler(async (req, res) => {
-  db.query(
-    "INSERT INTO messages(title, text, user_id) VALUES(?, ?, ?)",
-    [req.body.title, req.body.text, req.body.user_id],
-    (error, result) => {
-      console.log(result);
-      if (error) {
-        console.log(error);
-        return res
-          .status(500)
-          .json({ message: "Internal server error", error });
-      }
+  if (req.authenticated) {
+    db.query(
+      "INSERT INTO messages(title, text, user_id) VALUES(?, ?, ?)",
+      [req.body.title, req.body.text, req.body.user_id],
+      (error, result) => {
+        console.log(result);
+        if (error) {
+          console.log(error);
+          return res
+            .status(500)
+            .json({ message: "Internal server error", error });
+        }
 
-      // TODO: Make sure that only authenticated users can send these requests
-      return res
-        .status(201)
-        .json({ message: "Message created successfully", result });
-    }
-  );
+        return res
+          .status(201)
+          .json({ message: "Message created successfully", result });
+      }
+    );
+  } else {
+    return res.status(401).json({
+      message: "Unauthenticated request",
+    });
+  }
 });
 
 exports.messages_delete = asyncHandler(async (req, res) => {
