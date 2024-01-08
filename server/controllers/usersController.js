@@ -11,7 +11,9 @@ const userIsNonMember = require("../validators/userIsNonMember");
 exports.sign_up = [
   body("name", "Name is invalid")
     .trim()
-    .escape()
+    .customSanitizer((value) => {
+      return value.replace(/[^a-zA-Z0-9\s.,!?;:'"-]/g, "");
+    })
     .isLength({ min: 1 })
     .withMessage(
       "Invalid name length. Name length must be at least 1 character"
@@ -22,7 +24,9 @@ exports.sign_up = [
     ),
   body("email", "Email is invalid")
     .trim()
-    .escape()
+    .customSanitizer((value) => {
+      return value.replace(/[^a-zA-Z0-9\s.,!?;:'"-]/g, "");
+    })
     .isEmail()
     .withMessage("Entered value is not a valid email address")
     .custom((email) => {
@@ -43,7 +47,9 @@ exports.sign_up = [
     .withMessage("Email is already in use"),
   body("password")
     .trim()
-    .escape()
+    .customSanitizer((value) => {
+      return value.replace(/[^a-zA-Z0-9\s.,!?;:'"-]/g, "");
+    })
     .isLength({ min: 6 })
     .withMessage("Password length must be at least 6 characters")
     .isLength({ max: 50 })
@@ -124,7 +130,9 @@ exports.log_in = [
   body("password")
     .exists({ values: "falsy" })
     .withMessage("Password is missing")
-    .escape(),
+    .customSanitizer((value) => {
+      return value.replace(/[^a-zA-Z0-9\s.,!?;:'"-]/g, "");
+    }),
   (req, res) => {
     const result = validationResult(req);
 
@@ -227,7 +235,9 @@ exports.grant_membership = [
     .withMessage("User is already a member"),
   body("passcode")
     .trim()
-    .escape()
+    .customSanitizer((value) => {
+      return value.replace(/[^a-zA-Z0-9\s.,!?;:'"-]/g, "");
+    })
     .exists({ values: "falsy" })
     .withMessage("Please provide the passcode")
     .bail()
