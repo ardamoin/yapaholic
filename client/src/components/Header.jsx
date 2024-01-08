@@ -30,6 +30,7 @@ const Header = () => {
       console.log(response);
       dispatch(userActions.logout());
       navigate("/");
+      navigate(0)
     } catch (error) {
       console.error(error);
     }

@@ -1,28 +1,24 @@
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
 import { format } from "date-fns";
+import { jwtDecode } from "jwt-decode";
+import Spinner from "./Spinner";
 
 const Messages = () => {
   const [messages, setMessages] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const userMembership = useSelector((state) => state.user.membership);
   useEffect(() => {
     const fetchMessages = async () => {
-      try {
-        if (userMembership === null || userMembership === "non-member") {
-          const response = await fetch(
-            `${import.meta.env.VITE_BACKEND_URL}/messages/non-member`,
-            {
-              method: "GET",
-              headers: { "Content-Type": "application/json" },
-              credentials: "include",
-            }
-          );
+      const accessTokenCookie = document.cookie
+        .split("; ")
+        .find((cookie) => cookie.startsWith("access-token="));
 
-          const responseData = await response.json();
-          console.log(responseData);
-          setMessages(responseData.result);
-        } else if (userMembership === "member" || userMembership === "admin") {
+      const userMembership = accessTokenCookie
+        ? jwtDecode(accessTokenCookie.replace("access-token=", "")).membership
+        : "non-member";
+
+      try {
+        if (userMembership === "member" || userMembership === "admin") {
           const response = await fetch(
             `${import.meta.env.VITE_BACKEND_URL}/messages/member`,
             {
@@ -35,17 +31,32 @@ const Messages = () => {
           const responseData = await response.json();
           console.log(responseData);
           setMessages(responseData.result);
+        } else {
+          const response = await fetch(
+            `${import.meta.env.VITE_BACKEND_URL}/messages/non-member`,
+            {
+              method: "GET",
+              headers: { "Content-Type": "application/json" },
+              credentials: "include",
+            }
+          );
+
+          const responseData = await response.json();
+          console.log(responseData);
+          setMessages(responseData.result);
         }
+        setIsLoading(false)
       } catch (error) {
         console.error(error);
-      }
+      } 
     };
 
     fetchMessages();
-  }, [userMembership]);
+  }, []);
 
   return (
     <div className="flex flex-col items-center my-20">
+      {isLoading && <Spinner />}
       {messages.map((message) => {
         return (
           <div
