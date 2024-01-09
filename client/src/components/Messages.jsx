@@ -45,14 +45,25 @@ const Messages = () => {
           console.log(responseData);
           setMessages(responseData.result);
         }
-        setIsLoading(false)
+        setMessages((prev) => [...prev.sort(compareMessageDates)]);
+        setIsLoading(false);
       } catch (error) {
         console.error(error);
-      } 
+      }
     };
 
     fetchMessages();
   }, []);
+
+  const compareMessageDates = (a, b) => {
+    if (a.date < b.date) {
+      return 1;
+    }
+    if (a.date > b.date) {
+      return -1;
+    }
+    return 0;
+  };
 
   return (
     <div className="flex flex-col items-center my-20">
@@ -63,10 +74,10 @@ const Messages = () => {
             key={Math.random()}
             className="flex flex-col bg-pink-200 rounded-xl px-10 py-5 mb-10 w-[30rem]"
           >
-            <p className="text-2xl font-bold mb-2">{message.title}</p>
-            <p className="text-xl mb-4">{message.text}</p>
+            <p className="text-2xl font-bold mb-2 text-cyan-600">{message.title}</p>
+            <p className="text-lg mb-4 break-all">{message.text}</p>
             {message.name && (
-              <p className="flex justify-end">by {message.name}</p>
+              <p className="flex justify-end">by&nbsp;<span className="font-bold text-violet-600">{message.name}</span></p>
             )}
             {message.date && (
               <p className="flex justify-end">
