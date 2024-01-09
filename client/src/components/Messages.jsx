@@ -71,7 +71,7 @@ const Messages = () => {
       {messages.map((message) => {
         return (
           <div
-            key={Math.random()}
+            key={message.id}
             className="flex flex-col bg-pink-200 rounded-xl px-10 py-5 mb-10 w-[30rem]"
           >
             <p className="text-2xl font-bold mb-2 text-cyan-600">{message.title}</p>

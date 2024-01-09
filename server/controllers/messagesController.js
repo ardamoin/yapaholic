@@ -6,7 +6,7 @@ const userIdIsValid = require("../validators/userIdIsValid");
 exports.member_messages_get = asyncHandler(async (req, res) => {
   if (req.authenticated) {
     db.query(
-      "SELECT messages.title, messages.text, messages.date, users.name FROM messages JOIN users ON messages.user_id = users.id",
+      "SELECT messages.id, messages.title, messages.text, messages.date, users.name FROM messages JOIN users ON messages.user_id = users.id",
       (error, result) => {
         if (error) {
           console.log(error);
@@ -30,7 +30,7 @@ exports.member_messages_get = asyncHandler(async (req, res) => {
 
 exports.non_member_messages_get = asyncHandler(async (req, res) => {
   db.query(
-    "SELECT messages.title, messages.text FROM messages",
+    "SELECT messages.id, messages.title, messages.text FROM messages",
     (error, result) => {
       console.log(result);
       if (error) {
