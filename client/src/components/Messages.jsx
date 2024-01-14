@@ -45,7 +45,7 @@ const Messages = () => {
           console.log(responseData);
           setMessages(responseData.result);
         }
-        setMessages((prev) => [...prev.sort(compareMessageDates)]);
+        setMessages((prev) => [...prev.sort(compareMessageIDs)]);
         setIsLoading(false);
       } catch (error) {
         console.error(error);
@@ -55,11 +55,11 @@ const Messages = () => {
     fetchMessages();
   }, []);
 
-  const compareMessageDates = (a, b) => {
-    if (a.date < b.date) {
+  const compareMessageIDs = (a, b) => {
+    if (a.id < b.id) {
       return 1;
     }
-    if (a.date > b.date) {
+    if (a.id > b.id) {
       return -1;
     }
     return 0;
@@ -74,10 +74,17 @@ const Messages = () => {
             key={message.id}
             className="flex flex-col bg-pink-200 rounded-xl px-10 py-5 mb-10 w-[30rem]"
           >
-            <p className="text-2xl font-bold mb-2 text-cyan-600">{message.title}</p>
+            <p className="text-2xl font-bold mb-2 text-cyan-600">
+              {message.title}
+            </p>
             <p className="text-lg mb-4 break-all">{message.text}</p>
             {message.name && (
-              <p className="flex justify-end">by&nbsp;<span className="font-bold text-violet-600">{message.name}</span></p>
+              <p className="flex justify-end">
+                by&nbsp;
+                <span className="font-bold text-violet-600">
+                  {message.name}
+                </span>
+              </p>
             )}
             {message.date && (
               <p className="flex justify-end">
