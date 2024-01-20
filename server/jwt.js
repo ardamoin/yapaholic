@@ -1,4 +1,4 @@
-const { sign, verify } = require("jsonwebtoken");
+const { sign, verify, decode } = require("jsonwebtoken");
 
 const createToken = (user) => {
   const accessToken = sign(
@@ -16,6 +16,7 @@ const createToken = (user) => {
 
 const validateToken = (req, res, next) => {
   const accessToken = req.cookies && req.cookies["access-token"];
+  const decodedToken = accessToken && decode(accessToken, { json: true });
 
   if (!accessToken) {
     req.authenticated = false;
@@ -26,6 +27,7 @@ const validateToken = (req, res, next) => {
     const tokenIsValid = verify(accessToken, process.env.JWT_SECRET);
     if (tokenIsValid) {
       req.authenticated = true;
+      req.admin = decodedToken.membership === "admin";
       return next();
     }
   } catch (err) {

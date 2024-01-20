@@ -114,22 +114,31 @@ exports.messages_create = [
 ];
 
 exports.messages_delete = asyncHandler(async (req, res) => {
-  db.query(
-    "DELETE FROM messages WHERE id = ?",
-    [req.body.message_id],
-    (error, result) => {
-      console.log(result);
-      if (error) {
-        console.log(error);
-        return res
-          .status(500)
-          .json({ message: "Internal server error", error });
-      }
+  if (!req.admin) {
+    return res.status(401).json({ message: "User is not admin" });
+  }
 
-      // TODO: Make sure that only the admin can do this
-      return res
-        .status(200)
-        .json({ message: "Message deleted successfully", result });
-    }
-  );
+  if (req.authenticated) {
+    db.query(
+      "DELETE FROM messages WHERE id = ?",
+      [req.body.message_id],
+      (error, result) => {
+        console.log(result);
+        if (error) {
+          console.log(error);
+          return res
+            .status(500)
+            .json({ message: "Internal server error", error });
+        }
+
+        return res
+          .status(200)
+          .json({ message: "Message deleted successfully", result });
+      }
+    );
+  } else {
+    return res.status(401).json({
+      message: "Unauthenticated request",
+    });
+  }
 });
