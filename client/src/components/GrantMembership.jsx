@@ -55,10 +55,9 @@ const GrantMembership = () => {
   }
 
   return (
-    <div className="flex justify-center items-center -mt-32 h-[100vh]">
+    <div className="flex justify-center items-center -mt-32 h-[100vh] mb-20">
       <form
         className="flex flex-col gap-2 items-center w-fit"
-        // onClick={formSubmitHandler}
       >
         <h1 className="text-4xl self-start mb-2">Join the club</h1>
         <h2 className="text-lg self-start mb-2">

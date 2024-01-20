@@ -55,7 +55,7 @@ const NewMessage = () => {
   }
 
   return (
-    <div className="flex flex-col justify-center items-center mt-16">
+    <div className="flex flex-col justify-center items-center mt-16 mb-40">
       <div className="flex flex-col items-start gap-5">
         <h1 className="font-bold text-4xl mb-3">
           New <span className="text-purple-600">message</span>

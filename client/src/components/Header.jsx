@@ -38,7 +38,7 @@ const Header = () => {
   };
 
   return (
-    <div className="flex justify-between px-10 py-6 bg-golden-yellow">
+    <div className="flex flex-col items-center gap-5 lg:flex-row lg:justify-between lg:gap-0 px-10 py-6 bg-golden-yellow">
       <Link to="/">
         <h1 className="text-purple-pink text-3xl font-semibold">Yapaholic</h1>
       </Link>
