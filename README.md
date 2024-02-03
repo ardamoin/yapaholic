@@ -6,6 +6,8 @@ Welcome to Yapaholic! This application allows users to write anonymous posts and
 
 - Node.js and npm installed on your machine
 
+## Getting Started
+
 1. Set up and host your database tables by running the query in schema.sql.
 
 2. Clone the repository to your local machine:
